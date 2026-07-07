@@ -79,6 +79,8 @@ local function _replace_text(buf, start, end_pos, text)
     table.remove(lines)
   end
 
+  vim.api.nvim_echo({{"[_replace_text] lines=" .. #lines}}, false, {})
+
   local new_end
   if #lines == 1 then
     new_end = Position:new(start.line, start.col + #lines[1])
