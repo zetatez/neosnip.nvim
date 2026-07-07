@@ -598,6 +598,20 @@ function SnippetManager:add_snippet(trigger, value, description, options, ft, pr
   self._added_snippets_source:add_snippet(ft, def)
 end
 
+function SnippetManager:expand_anonymous(body, opts)
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local start_pos = Position:new(cursor[1] - 1, cursor[2])
+  local def = snippet_mod.NeoSnipSnippetDefinition:new(
+    0, "", body, "", opts or "", {}, "anonymous", nil, {}
+  )
+  def:matches(body)
+  self:_setup_inner_state()
+  local si = def:launch("", nil, nil, start_pos, start_pos)
+  vim.cmd("normal! zv")
+  table.insert(self._active_snippets, si)
+  self:_jump("FORWARD")
+end
+
 function SnippetManager:expand_anon(value, trigger, description, options, context, actions)
   trigger = trigger or ""
   description = description or ""

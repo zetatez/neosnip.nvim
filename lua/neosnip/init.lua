@@ -32,6 +32,10 @@ local function ensure_snippet_files_loaded()
   end
 end
 
+function M.anon(body, opts)
+  manager:expand_anonymous(body, opts)
+end
+
 local function compensate_for_pum()
   if vim.fn.pumvisible() == 1 then
     manager:_cursor_moved()
