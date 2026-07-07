@@ -455,15 +455,8 @@ function SnippetManager:_jump(direction)
         local line = vim.api.nvim_buf_get_lines(0, ntab._start.line, ntab._start.line + 1, false)[1] or ""
         vim.api.nvim_buf_set_lines(0, ntab._start.line, ntab._start.line + 1, false, { line:gsub("%s+$", "") })
       end
+      self._ignore_movements = true
       set_buf_cursor(ntab._start)
-      -- If tab stop has content, enter select mode for overwriting
-      if ntab._start < ntab._end then
-        vim.cmd("stopinsert")
-        vim.api.nvim_win_set_cursor(0, { ntab._start.line + 1, ntab._start.col })
-        vim.cmd("normal! v")
-        vim.api.nvim_win_set_cursor(0, { ntab._end.line + 1, ntab._end.col })
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-g>", true, true, true), "n", true)
-      end
       jumped = true
       self._ctab = ntab
       self._visual_content.placeholder = {
@@ -483,6 +476,13 @@ function SnippetManager:_jump(direction)
           vim.cmd([[call feedkeys("\<Esc>", "in")]])
           move_cmd = ""
         end
+      elseif ntab._start < ntab._end then
+        -- Select tab stop content for overwriting (select mode)
+        vim.cmd("stopinsert")
+        vim.api.nvim_win_set_cursor(0, { ntab._start.line + 1, ntab._start.col })
+        vim.cmd("normal! v")
+        vim.api.nvim_win_set_cursor(0, { ntab._end.line + 1, ntab._end.col })
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-g>", true, true, true), "n", true)
       end
     else
       self:_current_snippet_done()
