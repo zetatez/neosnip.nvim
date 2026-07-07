@@ -288,6 +288,7 @@ function SnippetManager:_snips(before, partial, autotrigger_only)
 end
 
 function SnippetManager:_try_expand(autotrigger_only)
+  vim.api.nvim_echo({{"[try] entered auto=" .. tostring(autotrigger_only)}}, false, {})
   if #self._active_snippets > 0 then
     self:_cursor_moved()
   end
@@ -295,6 +296,7 @@ function SnippetManager:_try_expand(autotrigger_only)
   local before = get_line_till_cursor()
   local snippets = self:_snips(before, false, autotrigger_only)
 
+  vim.api.nvim_echo({{"[try] before=" .. before .. " snips=" .. #snippets}}, false, {})
   if #snippets == 0 then return false end
 
   local with_context = {}
@@ -313,8 +315,10 @@ function SnippetManager:_try_expand(autotrigger_only)
     if not snippet then return true end
   end
 
+  vim.api.nvim_echo({{"[try] calling do_snippet"}}, false, {})
   self:_do_snippet(snippet, before)
   vim.cmd("let &g:undolevels = &g:undolevels")
+  vim.api.nvim_echo({{"[try] done=true"}}, false, {})
   return true
 end
 
