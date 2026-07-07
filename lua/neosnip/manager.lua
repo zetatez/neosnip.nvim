@@ -477,12 +477,20 @@ function SnippetManager:_jump(direction)
           move_cmd = ""
         end
       elseif ntab._start < ntab._end then
-        -- Select tab stop content for overwriting (select mode)
-        vim.cmd("stopinsert")
-        vim.api.nvim_win_set_cursor(0, { ntab._start.line + 1, ntab._start.col })
-        vim.cmd("normal! v")
-        vim.api.nvim_win_set_cursor(0, { ntab._end.line + 1, ntab._end.col })
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-g>", true, true, true), "n", true)
+        -- Select tab stop content for overwriting (queued, processed after return)
+        local s = ntab._start
+        local e = ntab._end
+        vim.api.nvim_feedkeys(
+          vim.api.nvim_replace_termcodes(
+            "<Esc>" ..
+            ":call cursor(" .. (s.line + 1) .. "," .. (s.col + 1) .. ")<CR>" ..
+            "v" ..
+            ":call cursor(" .. (e.line + 1) .. "," .. (e.col + 1) .. ")<CR>" ..
+            "\<C-g>",
+            true, true, true
+          ),
+          "n", false
+        )
       end
     else
       self:_current_snippet_done()
