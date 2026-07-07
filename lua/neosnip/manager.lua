@@ -486,7 +486,7 @@ function SnippetManager:_jump(direction)
             ":call cursor(" .. (s.line + 1) .. "," .. (s.col + 1) .. ")<CR>" ..
             "v" ..
             ":call cursor(" .. (e.line + 1) .. "," .. (e.col + 1) .. ")<CR>" ..
-            "\<C-g>",
+            "<C-g>",
             true, true, true
           ),
           "n", false
