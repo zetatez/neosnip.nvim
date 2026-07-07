@@ -69,12 +69,15 @@ end
 local function _replace_text(buf, start, end_pos, text)
   local lines = {}
   for s in text:gmatch("([^\n]*)\n?") do
-    if s ~= "" or text:sub(-1) == "\n" and #lines > 0 then
-      table.insert(lines, s)
-    end
+    table.insert(lines, s)
   end
   if text == "" then lines = {""} end
   if #lines == 0 then lines = {""} end
+
+  -- Remove trailing empty line artifact from gmatch when text ends with \n
+  if #lines > 1 and lines[#lines] == "" then
+    table.remove(lines)
+  end
 
   local new_end
   if #lines == 1 then
