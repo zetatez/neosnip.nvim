@@ -86,6 +86,10 @@ function SnippetDefinition:matches(before, visual_content)
       match = true
       self._matched = result[1]
     end
+  elseif self:has_option("p") then
+    -- Partial prefix: trigger starts with typed text
+    match = self._trigger:find("^" .. vim.pesc(words)) == 1 and words ~= ""
+    self._matched = words
   elseif self:has_option("w") then
     local words_len = #self._trigger
     local words_suffix = words:sub(-words_len)

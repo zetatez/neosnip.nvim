@@ -288,7 +288,6 @@ function SnippetManager:_snips(before, partial, autotrigger_only)
 end
 
 function SnippetManager:_try_expand(autotrigger_only)
-  vim.api.nvim_echo({{"[try] entered auto=" .. tostring(autotrigger_only)}}, false, {})
   if #self._active_snippets > 0 then
     self:_cursor_moved()
   end
@@ -296,7 +295,6 @@ function SnippetManager:_try_expand(autotrigger_only)
   local before = get_line_till_cursor()
   local snippets = self:_snips(before, false, autotrigger_only)
 
-  vim.api.nvim_echo({{"[try] before=" .. before .. " snips=" .. #snippets}}, false, {})
   if #snippets == 0 then return false end
 
   local with_context = {}
@@ -315,10 +313,8 @@ function SnippetManager:_try_expand(autotrigger_only)
     if not snippet then return true end
   end
 
-  vim.api.nvim_echo({{"[try] calling do_snippet"}}, false, {})
   self:_do_snippet(snippet, before)
   vim.cmd("let &g:undolevels = &g:undolevels")
-  vim.api.nvim_echo({{"[try] done=true"}}, false, {})
   return true
 end
 
@@ -532,11 +528,36 @@ function SnippetManager:_setup_inner_state()
       end, 0)
     end,
   })
+  -- Setup jump keymaps (buffer-local, active only during snippet)
+  local jump_fwd = vim.g.NeoSnipJumpForwardTrigger
+  local jump_bwd = vim.g.NeoSnipJumpBackwardTrigger
+  local buf = self._snippet_buffer_number
+  if jump_fwd and #tostring(jump_fwd) > 0 then
+    pcall(vim.keymap.set, "i", jump_fwd, function() self:jump_forwards() end, { buffer = buf, silent = true })
+    pcall(vim.keymap.set, "s", jump_fwd, function() self:jump_forwards() end, { buffer = buf, silent = true })
+  end
+  if jump_bwd and #tostring(jump_bwd) > 0 then
+    pcall(vim.keymap.set, "i", jump_bwd, function() self:jump_backwards() end, { buffer = buf, silent = true })
+    pcall(vim.keymap.set, "s", jump_bwd, function() self:jump_backwards() end, { buffer = buf, silent = true })
+  end
 end
 
 function SnippetManager:_teardown_inner_state()
   if not self._inner_state_up then return end
   vim.cmd("silent doautocmd <nomodeline> User NeoSnipExitLastSnippet")
+
+  -- Remove jump keymaps
+  local jump_fwd = vim.g.NeoSnipJumpForwardTrigger
+  local jump_bwd = vim.g.NeoSnipJumpBackwardTrigger
+  local buf = self._snippet_buffer_number or 0
+  if jump_fwd and #tostring(jump_fwd) > 0 then
+    pcall(vim.keymap.del, "i", jump_fwd, { buffer = buf })
+    pcall(vim.keymap.del, "s", jump_fwd, { buffer = buf })
+  end
+  if jump_bwd and #tostring(jump_bwd) > 0 then
+    pcall(vim.keymap.del, "i", jump_bwd, { buffer = buf })
+    pcall(vim.keymap.del, "s", jump_bwd, { buffer = buf })
+  end
 
   if self._change_provider then
     self._change_provider:detach()

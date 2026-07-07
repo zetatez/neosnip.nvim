@@ -427,6 +427,12 @@ function NeoSnipFileSource:_handle_snippet_or_global(lines, start_idx, filename,
     if #parts >= 2 and parts[#parts]:match("^[a-zA-Z]+$") then
       opts = table.remove(parts)
     end
+    -- Inline context: snippet trigger "descr" "expr" e
+    if opts:find("e") and not context and #parts >= 2 and parts[#parts]:match('^["\'].*["\']$') then
+      local ctx_raw = table.remove(parts)
+      context = ctx_raw:match('^["\'](.-)["\']$') or ctx_raw
+      context = context:gsub('\\"', '"'):gsub('\\\\', '\\')
+    end
     if #parts >= 2 and parts[#parts]:match('^["\'].*["\']$') then
       descr = table.remove(parts)
     end
