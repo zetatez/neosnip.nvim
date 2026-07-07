@@ -1,16 +1,14 @@
 # NeoSnip
 
-A pure-Lua snippet engine for Neovim. Drop-in spiritual successor to
-[UltiSnips](https://github.com/SirVer/ultisnips) with zero Python
-dependency, matching feature coverage, and no external requirements beyond
-Neovim itself.
+A pure-Lua snippet engine for Neovim with zero Python dependency and no
+external requirements beyond Neovim itself.
 
 ## Features
 
 - **Pure Lua** – no Python, no external processes, no dependencies.
-- **UltiSnips-compatible snippet syntax** – reuse your existing `.snippets`
-  files with minimal or no changes.
-- **`!p` Python bridge** – existing Python-powered snippets still work via
+- **Snippet syntax** – reuse your existing `.snippets` files with minimal
+  or no changes.
+- **`!p` Python bridge** – Python-powered snippets still work via
   Neovim's built-in `py3eval`.
 - **`!v` VimL evaluation** – inline Vimscript expressions.
 - **`` ` `` shell commands** – inline shell execution.
@@ -285,23 +283,6 @@ default. To disable:
 vim.g.NeoSnipEnableSnipMate = 0
 ```
 
-## Migrating from UltiSnips
-
-1. Point `g:NeoSnipSnippetDirectories` to your existing snippet folders:
-
-   ```lua
-   vim.g.NeoSnipSnippetDirectories = { "UltiSnips" }
-   ```
-
-2. Most `.snippets` files work as-is.
-
-3. Replace `UltiSnips` commands/keys with NeoSnip equivalents:
-
-   - `:UltiSnipsEdit` → `:NeoSnipEdit`
-   - `g:UltiSnipsExpandTrigger` → `g:NeoSnipExpandTrigger`
-   - `g:UltiSnipsSnippetDirectories` → `g:NeoSnipSnippetDirectories`
-   - etc.
-
 ## API
 
 ```lua
@@ -321,4 +302,4 @@ neosnip.list_snippets()
 
 ## License
 
-Same as the original UltiSnips project — GPLv3 or later.
+GPL-3.0 or later.
