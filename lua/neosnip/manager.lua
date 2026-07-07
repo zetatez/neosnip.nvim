@@ -353,7 +353,8 @@ function SnippetManager:_do_snippet(snippet, before)
   self._visual_content = { mode = "", text = "", placeholder = nil }
   table.insert(self._active_snippets, snippet_instance)
 
-  -- Park cursor at snippet end
+  -- Park cursor at snippet end (ignore CursorMovedI triggered by this)
+  self._ignore_movements = true
   set_buf_cursor(Position:new(snippet_instance._end.line, snippet_instance._end.col))
 
   snippet:do_post_expand(snippet_instance._start, snippet_instance._end, self._active_snippets)
@@ -455,6 +456,14 @@ function SnippetManager:_jump(direction)
         vim.api.nvim_buf_set_lines(0, ntab._start.line, ntab._start.line + 1, false, { line:gsub("%s+$", "") })
       end
       set_buf_cursor(ntab._start)
+      -- If tab stop has content, enter select mode for overwriting
+      if ntab._start < ntab._end then
+        vim.cmd("stopinsert")
+        vim.api.nvim_win_set_cursor(0, { ntab._start.line + 1, ntab._start.col })
+        vim.cmd("normal! v")
+        vim.api.nvim_win_set_cursor(0, { ntab._end.line + 1, ntab._end.col })
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-g>", true, true, true), "n", true)
+      end
       jumped = true
       self._ctab = ntab
       self._visual_content.placeholder = {

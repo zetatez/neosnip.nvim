@@ -39,7 +39,9 @@ end
 
 function SnippetInstance:replay_user_edits(cmds, ctab)
   for _, cmd in ipairs(cmds) do
-    self:_do_edit(cmd, ctab)
+    if cmd[4] ~= nil then
+      self:_do_edit(cmd, ctab)
+    end
   end
 end
 

@@ -168,6 +168,7 @@ end
 
 function EditableTextObject:_do_edit(cmd, ctab)
   local ctype, line, col, text = cmd[1], cmd[2], cmd[3], cmd[4]
+  if text == nil then return end
   local pos = Position:new(line, col)
 
   local to_kill = {}
